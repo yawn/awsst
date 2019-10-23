@@ -1,0 +1,22 @@
+on:
+  - push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: test
+        uses: cedrickring/golang-action@1.4.1
+        env:
+          GO111MODULE: "on"
+        with:
+          args: go test -cover ./...
+      - name: Debug
+        uses: mxschmitt/action-tmate@v1
+      - name: build
+        run: |
+          pip install -qU b2
+          /usr/local/bin/b2 authorize
+          mkdir -p data
+          /usr/local/bin/b2 sync --noProgress --threads 8 b2://githubcom-yawn-awsst data/
